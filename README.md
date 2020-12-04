@@ -1,3 +1,3 @@
 # FileProviderKit
 
-A description of this package.
+A swift implementation for abstracting cloud file providers access.
