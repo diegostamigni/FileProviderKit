@@ -8,7 +8,7 @@
 
 import Foundation
 
-protocol FileEntry {
+public protocol FileEntry {
 	var uniqueIdentifier: String? { get }
 	
 	var isFolder: Bool { get }
@@ -24,7 +24,7 @@ protocol FileEntry {
 	var isImportable: Bool { get }
 }
 
-extension FileEntry {
+public extension FileEntry {
 	var isImportable: Bool {
 		return self.isPDF
 	}

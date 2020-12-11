@@ -8,6 +8,6 @@
 
 import Foundation
 
-protocol CancelableRequest {
+public protocol CancelableRequest {
     func cancel()
 }

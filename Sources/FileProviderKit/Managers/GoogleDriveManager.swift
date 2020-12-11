@@ -14,16 +14,17 @@ import GoogleSignIn
 extension GTLRServiceTicket : CancelableRequest {
 }
 
-class GoogleDriveConfig {
-	static var apiKey: String!
-	static var listPageSize = 50
-	static var listQueryFields = "kind,nextPageToken,files(mimeType,id,kind,name,webViewLink,thumbnailLink,fullFileExtension,size)"
+public class GoogleDriveConfig {
+    public static var clientID: String!
+    public static var apiKey: String!
+    public static var listPageSize = 50
+    public static var listQueryFields = "kind,nextPageToken,files(mimeType,id,kind,name,webViewLink,thumbnailLink,fullFileExtension,size)"
 }
 
-class GoogleDriveManager : CloudServiceManager<GTLRDrive_File, String> {
+public class GoogleDriveManager : CloudServiceManager<GTLRDrive_File, String> {
     fileprivate var service = GTLRDriveService()
     
-    static let shared : GoogleDriveManager = {
+    public static let shared : GoogleDriveManager = {
         let instance = GoogleDriveManager()
 		instance.service.apiKey = GoogleDriveConfig.apiKey
         instance.service.isRetryEnabled = true
@@ -31,20 +32,20 @@ class GoogleDriveManager : CloudServiceManager<GTLRDrive_File, String> {
     }()
     
     @discardableResult
-    override func list(in folder: GTLRDrive_File?, options: [String : Any]?,
+    public override func list(in folder: GTLRDrive_File?, options: [String : Any]?,
 			completion: @escaping (_ files: [GTLRDrive_File], _ nextPageToken: GoogleDriveManager.CursorType?, _ error: Error?) -> Void) -> CancelableRequest? {
 		return listOrSearch(in: folder, options: options, filter: nil, completion: completion)
     }
     
     @discardableResult
-    override func search(query: String, in folder: GTLRDrive_File?,
+    public override func search(query: String, in folder: GTLRDrive_File?,
                          options: [String : Any]?,
 			completion: @escaping (_ files: [GTLRDrive_File], _ nextPageToken: GoogleDriveManager.CursorType?, _ error: Error?) -> Void) -> CancelableRequest? {
 		return listOrSearch(in: folder, options: options, filter: query, completion: completion)
     }
     
     @discardableResult
-    override func download(file: FileEntry, options: [String : Any]?,
+    public override func download(file: FileEntry, options: [String : Any]?,
                            completion: @escaping (_ location: URL?, _ error: Error?) -> Void) -> CancelableRequest? {
         guard let identifier = file.uniqueIdentifier, let name = file.fileName else {
             completion(nil, NSError(message: NSLocalizedString("Wrong items", comment: "")))
@@ -105,7 +106,7 @@ class GoogleDriveManager : CloudServiceManager<GTLRDrive_File, String> {
     
     // MARK: - Utils
     
-    func updateAuthorizer() {
+    public func updateAuthorizer() {
         guard self.service.authorizer != nil else {
             GoogleSignInManager.shared.loginSilently()
             return
@@ -116,11 +117,11 @@ class GoogleDriveManager : CloudServiceManager<GTLRDrive_File, String> {
         }
     }
     
-    func updateAuthorizer(authorizer: GTMFetcherAuthorizationProtocol) {
+    public func updateAuthorizer(authorizer: GTMFetcherAuthorizationProtocol) {
         self.service.authorizer = authorizer
     }
 	
-	fileprivate func listOrSearch(in folder: GTLRDrive_File?, options: [String : Any]?, filter with: String?,
+    fileprivate func listOrSearch(in folder: GTLRDrive_File?, options: [String : Any]?, filter with: String?,
 		completion: @escaping (_ files: [GTLRDrive_File], _ nextPageToken: GoogleDriveManager.CursorType?, _ error: Error?) -> Void) -> CancelableRequest?
 	{
 		guard folder?.isFolder ?? true else {
@@ -141,6 +142,8 @@ class GoogleDriveManager : CloudServiceManager<GTLRDrive_File, String> {
         if let nextPageToken = options?[kListCursor] as? String {
             driveQuery.pageToken = nextPageToken
         }
+        
+        driveQuery.spaces = "drive"
 
 		let request = self.service.executeQuery(driveQuery) { (ticket, responseObject, error) in
 			if let error = error as NSError? {

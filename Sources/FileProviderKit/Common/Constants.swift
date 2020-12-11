@@ -10,7 +10,7 @@ import CoreGraphics
 import Foundation
 import MobileCoreServices
 
-enum CloudProviderType : Int {
+public enum CloudProviderType : Int {
     case local = -1
     case google = 0
 	case dropbox

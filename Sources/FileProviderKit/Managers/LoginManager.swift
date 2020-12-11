@@ -8,16 +8,8 @@
 
 import Foundation
 
-protocol LoginManagerDelegate : class {
-    func loginCompleted(for provider: CloudProviderType, sender: LoginManager)
-	func logoutCompleted(for provider: CloudProviderType, sender: LoginManager)
-	
-	func loginError(for provider: CloudProviderType, sender: LoginManager, error: Error)
-	func logoutError(for provider: CloudProviderType, sender: LoginManager, error: Error)
-}
-
-class LoginManager {
-	weak var delegate: LoginManagerDelegate?
+public class LoginManager: NSObject {
+	public weak var delegate: LoginManagerDelegate?
 	
     var isLogged: Bool {
         return false

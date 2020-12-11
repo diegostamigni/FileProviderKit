@@ -8,7 +8,7 @@
 
 import SwiftyDropbox
 
-extension Files.Metadata {
+public extension Files.Metadata {
 	var asFile: Files.FileMetadata? {
 		return self as? Files.FileMetadata
 	}
@@ -20,20 +20,20 @@ extension Files.Metadata {
 
 extension Files.Metadata : FileEntry {
 
-	var isFolder: Bool {
+    public var isFolder: Bool {
 		return self.asFolder != nil
 	}
 
-	var isPDF: Bool {
+    public var isPDF: Bool {
 		guard let item = self.asFile else { return false }
 		return item.name.contains(".pdf")
 	}
 
-	var fileSize: UInt64 {
+    public var fileSize: UInt64 {
 		return self.asFile?.size ?? 0
 	}
 
-	var uniqueIdentifier: String? {
+    public var uniqueIdentifier: String? {
 		if let file = self.asFile {
 			return file.id
 		}
@@ -45,11 +45,11 @@ extension Files.Metadata : FileEntry {
 		return nil
 	}
 
-	var fileName: String? {
+    public var fileName: String? {
 		return self.name
 	}
 
-	var cloudPath: String? {
+    public var cloudPath: String? {
 		return self.pathLower
 	}
 }

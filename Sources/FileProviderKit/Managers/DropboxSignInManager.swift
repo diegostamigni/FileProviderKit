@@ -9,21 +9,22 @@
 import UIKit
 import SwiftyDropbox
 
-class DropboxSignInManager : LoginManager {
-	static let shared : DropboxSignInManager = {
+public class DropboxSignInManager : LoginManager {
+	public static let shared : DropboxSignInManager = {
+        DropboxClientsManager.setupWithAppKey(DropboxConfig.apiKey)
 		let instance = DropboxSignInManager()
 		return instance
 	}()
 	
-	var authorizedClient: DropboxClient? {
+    public var authorizedClient: DropboxClient? {
 		return DropboxClientsManager.authorizedClient
 	}
 	
-	override var isLogged: Bool {
+    public override var isLogged: Bool {
 		return self.authorizedClient != nil
 	}
 	
-	func finalizeLogin(with authResult: DropboxOAuthResult) {
+    public func finalizeLogin(with authResult: DropboxOAuthResult) {
 		switch authResult {
 		case .success:
 			print("User Signed Into Dropbox")
@@ -40,7 +41,7 @@ class DropboxSignInManager : LoginManager {
 		}
 	}
 	
-	func login(in controller: UIViewController) {
+    public func login(in controller: UIViewController) {
 		configure()
 
 		DropboxClientsManager.authorizeFromController(UIApplication.shared, controller: controller, openURL: {
@@ -49,11 +50,11 @@ class DropboxSignInManager : LoginManager {
 		})
 	}
 	
-	func loginSilently() {
+    public func loginSilently() {
 		configure()
 	}
 	
-	override func logout() {
+    public override func logout() {
 		DropboxClientsManager.unlinkClients()
 		
 		self.delegate?.logoutCompleted(for: .dropbox, sender: self)

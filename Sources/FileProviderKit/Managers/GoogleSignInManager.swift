@@ -8,75 +8,102 @@
 
 import Foundation
 import GoogleSignIn
+import AppAuth
 
-class GoogleSignInManager : LoginManager {
-	static let shared : GoogleSignInManager = {
-		let instance = GoogleSignInManager()
-		return instance
-	}()
+public class GoogleSignInManager : LoginManager, GIDSignInDelegate {
+    public static let shared : GoogleSignInManager = {
+        let instance = GoogleSignInManager()
+        GIDSignIn.sharedInstance().delegate = instance
+        return instance
+    }()
     
-    override var isLogged: Bool {
-		GIDSignIn.sharedInstance()?.currentUser != nil
+    public override var isLogged: Bool {
+        GIDSignIn.sharedInstance()?.currentUser != nil
     }
-	
-	var clientID: String? {
-		set(value) {
-			GIDSignIn.sharedInstance().clientID = value
-		}
-		get {
-			return GIDSignIn.sharedInstance().clientID
-		}
-	}
-	
-	weak var googleLoginDelegate: GIDSignInDelegate? {
-		set(value) {
-			GIDSignIn.sharedInstance().delegate = value
-		}
-		get {
-			return GIDSignIn.sharedInstance().delegate
-		}
-	}
     
-    func finalizeLogin(for user: GIDGoogleUser?, error: Error?) {
+    public var clientID: String? {
+        set(value) {
+            GIDSignIn.sharedInstance().clientID = value
+        }
+        get {
+            return GIDSignIn.sharedInstance().clientID
+        }
+    }
+    public func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
+        if let error = error {
+            if (error as NSError).code == GIDSignInErrorCode.hasNoAuthInKeychain.rawValue {
+                print("The user has not signed in before or they have since signed out.")
+            } else {
+                print("\(error.localizedDescription)")
+            }
+            delegate?.loginError(for: CloudProviderType.google, sender: self, error: error)
+            return
+        }
+        // Perform any operations on signed in user here.
+        let userId = user.userID
+        print("userID: \(userId ?? "no userId")")
+        print("\(user.profile.name)")
+        
+        finalizeLogin(for: user, error: error)
+        
+    }
+    
+    public func finalizeLogin(for user: GIDGoogleUser?, error: Error?) {
         if error != nil || user == nil {
-			self.delegate?.loginError(for: .google,
-						sender: self,
-						error: error != nil
-								? error!
-								: NSError(message: NSLocalizedString("User not available", comment: "")))
+            self.delegate?.loginError(for: .google,
+                                      sender: self,
+                                      error: error != nil
+                                        ? error!
+                                        : NSError(message: NSLocalizedString("User not available", comment: "")))
             
             return
         }
         
         if let auth = user?.authentication, let authorizer = auth.fetcherAuthorizer() {
-			print("User Signed Into Google")
+            print("User Signed Into Google")
             GoogleDriveManager.shared.updateAuthorizer(authorizer: authorizer)
-
-			self.delegate?.loginCompleted(for: .google, sender: self)
+            
+            self.delegate?.loginCompleted(for: .google, sender: self)
         }
     }
     
-	override func login() {
+    public override func login() {
         configure()
         
-		GIDSignIn.sharedInstance().signIn()
+        GIDSignIn.sharedInstance().signIn()
     }
     
-    func loginSilently() {
+    public func loginSilently() {
         configure()
         
         GIDSignIn.sharedInstance().signIn()
     }
     
     // MARK: - Utils
-	
-	override func logout() {
-		GIDSignIn.sharedInstance().signOut()
+    
+    public override func logout() {
+        GIDSignIn.sharedInstance().signOut()
         
-		self.delegate?.logoutCompleted(for: .google, sender: self)
-	}
+        self.delegate?.logoutCompleted(for: .google, sender: self)
+    }
     
     fileprivate func configure() {
         GIDSignIn.sharedInstance().scopes = kGoogleDriveScopes
+        GIDSignIn.sharedInstance()?.presentingViewController = UIApplication.shared.currentWindow?.rootViewController
+    }
+}
+
+extension UIApplication {
+    public var currentWindow: UIWindow? {
+        if #available(iOS 13.0, *) {
+            return connectedScenes
+                .filter({$0.activationState == .foregroundActive})
+                .map({$0 as? UIWindowScene})
+                .compactMap({$0})
+                .first?.windows
+                .filter({$0.isKeyWindow}).first
+        } else {
+            return UIApplication.shared.keyWindow
+        }
     }
 }

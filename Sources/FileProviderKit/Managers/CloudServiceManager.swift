@@ -8,19 +8,19 @@
 
 import Foundation
 
-class BaseCloudServiceManager<CloudFile : FileEntry, Cursor> : CloudService {
-    typealias FileType = CloudFile
+public class BaseCloudServiceManager<CloudFile : FileEntry, Cursor> : CloudService {
+    public typealias FileType = CloudFile
     
-	typealias CursorType = Cursor
+    public typealias CursorType = Cursor
 	
 	@discardableResult
-    func list(in folder: CloudFile?, options: [String : Any]?,
+    public func list(in folder: CloudFile?, options: [String : Any]?,
               completion: @escaping (_ files: [FileType], _ nextToken: CursorType?, _ error: Error?) -> Void) -> CancelableRequest? {
         return nil
     }
     
     @discardableResult
-    func download(file: FileEntry, options: [String : Any]?, completion: @escaping (URL?, Error?) -> Void) -> CancelableRequest? {
+    public func download(file: FileEntry, options: [String : Any]?, completion: @escaping (URL?, Error?) -> Void) -> CancelableRequest? {
         return nil
     }
     
@@ -30,12 +30,12 @@ class BaseCloudServiceManager<CloudFile : FileEntry, Cursor> : CloudService {
 //    }
     
     @discardableResult
-    func search(query: String, in folder: FileType?,
+    public func search(query: String, in folder: FileType?,
                 options: [String : Any]?,
                 completion: @escaping (_ files: [FileType], _ nextToken: CursorType?, _ error: Error?) -> Void)  -> CancelableRequest? {
         return nil
     }
 }
 
-class CloudServiceManager<FileType : FileEntry, CursorType> : BaseCloudServiceManager<FileType, CursorType> {
+public class CloudServiceManager<FileType : FileEntry, CursorType> : BaseCloudServiceManager<FileType, CursorType> {
 }

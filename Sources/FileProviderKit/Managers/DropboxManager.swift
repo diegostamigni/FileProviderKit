@@ -18,16 +18,14 @@ extension DownloadRequestFile : CancelableRequest {
 extension UploadRequest : CancelableRequest {
 }
 
-class DropboxConfig {
-	static var apiKey: String!
-	static var listPageSize = 50
+public class DropboxConfig {
+	public static var apiKey: String!
+	public static var listPageSize = 50
 }
 
-class DropboxManager : CloudServiceManager<Files.Metadata, String> {
+public class DropboxManager : CloudServiceManager<Files.Metadata, String> {
     
-	static let shared : DropboxManager = {
-		DropboxClientsManager.setupWithAppKey(DropboxConfig.apiKey)
-
+	public static let shared : DropboxManager = {
 		let instance = DropboxManager()
 		return instance
 	}()
@@ -37,7 +35,7 @@ class DropboxManager : CloudServiceManager<Files.Metadata, String> {
 	}
     
     @discardableResult
-	override func list(in folder: Files.Metadata?, options: [String : Any]?,
+	public override func list(in folder: Files.Metadata?, options: [String : Any]?,
 	                   completion: @escaping ([Files.Metadata], DropboxManager.CursorType?, Error?) -> Void) -> CancelableRequest? {
 		guard let client = self.authorizedClient else {
 			completion([], nil, NSError(message: NSLocalizedString("Client is not authorized", comment: "")))
@@ -64,7 +62,7 @@ class DropboxManager : CloudServiceManager<Files.Metadata, String> {
 	}
     
     @discardableResult
-	override func download(file: FileEntry, options: [String : Any]?,
+	public override func download(file: FileEntry, options: [String : Any]?,
 	              completion: @escaping (_ location: URL?, _ error: Error?) -> Void) -> CancelableRequest? {
 		guard let client = self.authorizedClient else {
 			completion(nil, NSError(message: NSLocalizedString("Client is not authorized", comment: "")))
@@ -129,7 +127,7 @@ class DropboxManager : CloudServiceManager<Files.Metadata, String> {
 //    }
 	
 	@discardableResult
-	override func search(query: String, in folder: Files.Metadata?, options: [String : Any]?,
+	public override func search(query: String, in folder: Files.Metadata?, options: [String : Any]?,
 	                     completion: @escaping ([Files.Metadata], String?, Error?) -> Void) -> CancelableRequest? {
 		guard let client = self.authorizedClient else {
 			completion([], nil, NSError(message: NSLocalizedString("Client is not authorized", comment: "")))
