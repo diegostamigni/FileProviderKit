@@ -15,12 +15,12 @@ class DocumentManager {
 	}()
 
 	var cacheDirectory: URL? {
-		URL(string: NSTemporaryDirectory())
+		FileManager.default.temporaryDirectory
 	}
 	
-    lazy var documentDirectory: URL? = {
-		URL(string: NSHomeDirectory())?.appendingPathComponent("Documents")
-    }()
+    var documentDirectory: URL? {
+		try? FileManager.default.url(for: .documentDirectory, in: .allDomainsMask, appropriateFor: nil, create: true)
+	}
 	
 	func locationInCacheDirectory(with name: String, isDirectory: Bool = false) -> URL? {
 		return self.location(in: self.cacheDirectory, with: name, isDirectory: isDirectory)

@@ -42,7 +42,7 @@ public class GoogleSignInManager : LoginManager, GIDSignInDelegate {
         // Perform any operations on signed in user here.
         let userId = user.userID
         print("userID: \(userId ?? "no userId")")
-        print("\(user.profile.name)")
+        print("\(user.profile.name ?? "")")
         
         finalizeLogin(for: user, error: error)
         
