@@ -14,24 +14,12 @@ class DocumentManager {
 		return instance
 	}()
 
-    lazy var tmpDirectory: URL? = {
-        let results = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true)
-        guard results.count > 0, let url = URL(string: results[0]) else { return nil }
-		try? FileManager.default.createDirectory(at: url, withIntermediateDirectories: true, attributes: nil)
-		return url
-	}()
-	
 	var cacheDirectory: URL? {
-		get {
-			return self.tmpDirectory
-		}
+		URL(string: NSTemporaryDirectory())
 	}
 	
     lazy var documentDirectory: URL? = {
-        let results = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
-		guard results.count > 0, let url = URL(string: results[0]) else { return nil }
-		try? FileManager.default.createDirectory(at: url, withIntermediateDirectories: true, attributes: nil)
-		return url
+		URL(string: NSHomeDirectory())?.appendingPathComponent("Documents")
     }()
 	
 	func locationInCacheDirectory(with name: String, isDirectory: Bool = false) -> URL? {
